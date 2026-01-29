@@ -2,13 +2,13 @@
 
     <% if (page === 'home') { %>
     <section class="hero">
-      <h1>AI for SMBs</h1>
-      <p class="hero-sub">Automation solutions for small and medium businesses. Real problems, real tools, real results.</p>
+      <h1>AI לעסקים קטנים ובינוניים</h1>
+      <p class="hero-sub">פתרונות אוטומציה לעסקים. בעיות אמיתיות, כלים אמיתיים, תוצאות אמיתיות.</p>
     </section>
     <% } else { %>
     <section class="hero">
-      <h1>Case Studies</h1>
-      <p class="hero-sub">Technical deep-dives into automation projects built for Merital and other SMBs.</p>
+      <h1>מקרי בוחן</h1>
+      <p class="hero-sub">צלילות טכניות לפרויקטים של אוטומציה שנבנו עבור מריטל ועסקים נוספים.</p>
     </section>
     <% } %>
 
@@ -17,7 +17,7 @@
 
     <% if (featured.length > 0 && page === 'home') { %>
     <section class="featured-section">
-      <h2 class="section-title">Featured Project</h2>
+      <h2 class="section-title">פרויקט מומלץ</h2>
       <% featured.forEach(function(p) { %>
         <a href="/post/<%= p.slug %>" class="featured-card">
           <div class="featured-card-inner">
@@ -42,7 +42,7 @@
     <% } %>
 
     <section class="posts-grid">
-      <% if (page === 'home' && featured.length > 0) { %><h2 class="section-title">All Posts</h2><% } %>
+      <% if (page === 'home' && featured.length > 0) { %><h2 class="section-title">כל הפוסטים</h2><% } %>
       <div class="grid">
         <% const list = (page === 'home' && featured.length > 0) ? regular : posts; %>
         <% list.forEach(function(p) { %>

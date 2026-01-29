@@ -87,8 +87,5 @@ app.get("/post/:slug", (req, res) => {
   });
 });
 
-app.get("/about", (req, res) => {
-  res.render("about", { page: "about" });
-});
 
 app.listen(PORT, () => console.log(`Blog running at http://localhost:${PORT}`));
