@@ -1,0 +1,10 @@
+<%- include('header') %>
+    <h1>Posts</h1>
+    <% posts.forEach(function(p) { %>
+      <article>
+        <h2><a href="/post/<%= p.slug %>"><%= p.title %></a></h2>
+        <time><%= p.date %></time>
+        <p><%= p.excerpt %></p>
+      </article>
+    <% }) %>
+<%- include('footer') %>
