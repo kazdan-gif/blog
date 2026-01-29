@@ -1,7 +1,19 @@
 <%- include('header') %>
-    <article>
-      <h1><%= title %></h1>
-      <time><%= date %></time>
+    <article class="post">
+      <div class="post-header">
+        <div class="post-meta">
+          <% if (project) { %><span class="badge badge-project"><%= project %></span><% } %>
+          <% if (category) { %><span class="badge badge-category"><%= category %></span><% } %>
+          <time><%= date %></time>
+        </div>
+        <h1><%= title %></h1>
+        <% if (impact) { %><div class="impact-banner"><%= impact %></div><% } %>
+        <% if (tools && tools.length) { %>
+        <div class="tools">
+          <% tools.forEach(function(t) { %><span class="tool-badge"><%= t %></span><% }) %>
+        </div>
+        <% } %>
+      </div>
       <div class="post-content">
         <%- content %>
       </div>

@@ -1,7 +1,7 @@
 {
   "name": "blog",
-  "version": "1.0.0",
-  "description": "Personal blog powered by markdown files",
+  "version": "2.0.0",
+  "description": "AI for SMBs — Technical case study portfolio by Alon",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -10,6 +10,8 @@
     "ejs": "^3.1.10",
     "express": "^4.21.0",
     "gray-matter": "^4.0.3",
-    "marked": "^15.0.0"
+    "marked": "^15.0.0",
+    "marked-highlight": "^2.2.1",
+    "highlight.js": "^11.11.0"
   }
 }

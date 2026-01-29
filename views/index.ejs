@@ -1,10 +1,70 @@
 <%- include('header') %>
-    <h1>Posts</h1>
-    <% posts.forEach(function(p) { %>
-      <article>
-        <h2><a href="/post/<%= p.slug %>"><%= p.title %></a></h2>
-        <time><%= p.date %></time>
-        <p><%= p.excerpt %></p>
-      </article>
-    <% }) %>
+
+    <% if (page === 'home') { %>
+    <section class="hero">
+      <h1>AI for SMBs</h1>
+      <p class="hero-sub">Automation solutions for small and medium businesses. Real problems, real tools, real results.</p>
+    </section>
+    <% } else { %>
+    <section class="hero">
+      <h1>Case Studies</h1>
+      <p class="hero-sub">Technical deep-dives into automation projects built for Merital and other SMBs.</p>
+    </section>
+    <% } %>
+
+    <% const featured = posts.filter(p => p.featured); %>
+    <% const regular = posts.filter(p => !p.featured); %>
+
+    <% if (featured.length > 0 && page === 'home') { %>
+    <section class="featured-section">
+      <h2 class="section-title">Featured Project</h2>
+      <% featured.forEach(function(p) { %>
+        <a href="/post/<%= p.slug %>" class="featured-card">
+          <div class="featured-card-inner">
+            <div class="card-meta">
+              <% if (p.project) { %><span class="badge badge-project"><%= p.project %></span><% } %>
+              <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
+            </div>
+            <h3><%= p.title %></h3>
+            <p class="card-excerpt"><%= p.excerpt %></p>
+            <div class="card-bottom">
+              <% if (p.impact) { %><span class="impact"><%= p.impact %></span><% } %>
+              <% if (p.tools && p.tools.length) { %>
+              <div class="tools">
+                <% p.tools.forEach(function(t) { %><span class="tool-badge"><%= t %></span><% }) %>
+              </div>
+              <% } %>
+            </div>
+          </div>
+        </a>
+      <% }) %>
+    </section>
+    <% } %>
+
+    <section class="posts-grid">
+      <% if (page === 'home' && featured.length > 0) { %><h2 class="section-title">All Posts</h2><% } %>
+      <div class="grid">
+        <% const list = (page === 'home' && featured.length > 0) ? regular : posts; %>
+        <% list.forEach(function(p) { %>
+          <a href="/post/<%= p.slug %>" class="card">
+            <div class="card-meta">
+              <% if (p.project) { %><span class="badge badge-project"><%= p.project %></span><% } %>
+              <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
+            </div>
+            <h3><%= p.title %></h3>
+            <time><%= p.date %></time>
+            <p class="card-excerpt"><%= p.excerpt %></p>
+            <div class="card-bottom">
+              <% if (p.impact) { %><span class="impact"><%= p.impact %></span><% } %>
+              <% if (p.tools && p.tools.length) { %>
+              <div class="tools">
+                <% p.tools.forEach(function(t) { %><span class="tool-badge"><%= t %></span><% }) %>
+              </div>
+              <% } %>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    </section>
+
 <%- include('footer') %>

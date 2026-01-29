@@ -1,6 +1,61 @@
   </main>
   <footer>
-    <p>&copy; <%= new Date().getFullYear() %> Blog</p>
+    <div class="footer-cta">
+      <p>?Curious how this applies to your business</p>
+      <a href="mailto:kazdan@gmail.com" class="cta-link">Let's talk</a>
+    </div>
+    <div class="footer-bottom">
+      <p>Alon | AI for SMBs &copy; <%= new Date().getFullYear() %></p>
+    </div>
   </footer>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    // Theme
+    function getTheme() {
+      return localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    }
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('theme', t);
+      const hljsLink = document.getElementById('hljs-theme');
+      hljsLink.href = t === 'dark'
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.0/styles/github-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.0/styles/github.min.css';
+    }
+    function toggleTheme() {
+      applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+    }
+    applyTheme(getTheme());
+
+    // Mermaid
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: getTheme() === 'dark' ? 'dark' : 'default',
+    });
+    document.querySelectorAll('pre code.language-mermaid, pre code.hljs.language-mermaid').forEach(function(el) {
+      const pre = el.parentElement;
+      const div = document.createElement('div');
+      div.className = 'mermaid';
+      div.textContent = el.textContent;
+      pre.replaceWith(div);
+    });
+    mermaid.run();
+
+    // Copy buttons
+    document.querySelectorAll('.post-content pre').forEach(function(pre) {
+      const btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.textContent = 'Copy';
+      btn.addEventListener('click', function() {
+        const code = pre.querySelector('code');
+        navigator.clipboard.writeText(code.textContent).then(function() {
+          btn.textContent = 'Copied!';
+          setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+        });
+      });
+      pre.style.position = 'relative';
+      pre.appendChild(btn);
+    });
+  </script>
 </body>
 </html>
