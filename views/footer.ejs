@@ -1,4 +1,5 @@
   </main>
+  <button class="scroll-top" id="scroll-top" aria-label="חזרה למעלה">&#8593;</button>
   <footer>
     <div class="footer-bottom">
       <p>דוֹשי | AI לעסקים &copy; <%= new Date().getFullYear() %></p>
@@ -36,6 +37,43 @@
       pre.replaceWith(div);
     });
     mermaid.run();
+
+    // Scroll to top
+    var scrollBtn = document.getElementById('scroll-top');
+    if (scrollBtn) {
+      window.addEventListener('scroll', function() {
+        scrollBtn.classList.toggle('visible', window.scrollY > 400);
+      });
+      scrollBtn.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    // Tag search & filter
+    var tagSearch = document.getElementById('tag-search');
+    var tagsList = document.getElementById('tags-list');
+    if (tagSearch && tagsList) {
+      var tagBtns = tagsList.querySelectorAll('.tag-btn');
+      tagSearch.addEventListener('input', function() {
+        var q = this.value.toLowerCase();
+        tagBtns.forEach(function(btn) {
+          btn.style.display = btn.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+      });
+      tagBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var tag = this.dataset.tag;
+          var cards = document.querySelectorAll('.card, .featured-card');
+          var active = this.classList.toggle('active');
+          tagBtns.forEach(function(b) { if (b !== btn) b.classList.remove('active'); });
+          cards.forEach(function(card) {
+            if (!active) { card.style.display = ''; return; }
+            var text = card.textContent;
+            card.style.display = text.includes(tag) ? '' : 'none';
+          });
+        });
+      });
+    }
 
     // Copy buttons
     document.querySelectorAll('.post-content pre').forEach(function(pre) {

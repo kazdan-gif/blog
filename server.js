@@ -61,13 +61,25 @@ function getPosts(filter) {
   return posts;
 }
 
+function getAllTags() {
+  const posts = getPosts();
+  const tagSet = new Set();
+  posts.forEach((p) => {
+    if (p.category) tagSet.add(p.category);
+    p.tools.forEach((t) => tagSet.add(t));
+  });
+  return Array.from(tagSet).sort();
+}
+
 app.get("/", (req, res) => {
-  res.render("index", { posts: getPosts(), page: "home" });
+  res.render("index", { posts: getPosts(), page: "home", tags: getAllTags() });
 });
 
-app.get("/case-studies", (req, res) => {
+app.get("/case-studies", (req, res) => res.redirect(301, "/articles"));
+
+app.get("/articles", (req, res) => {
   const posts = getPosts((p) => p.category && p.category !== "");
-  res.render("index", { posts, page: "case-studies" });
+  res.render("index", { posts, page: "articles", tags: getAllTags() });
 });
 
 app.get("/post/:slug", (req, res) => {
@@ -75,6 +87,8 @@ app.get("/post/:slug", (req, res) => {
   if (!fs.existsSync(filePath)) return res.status(404).send("Not found");
   const raw = fs.readFileSync(filePath, "utf8");
   const { data, content } = matter(raw);
+  const wordCount = content.split(/\s+/).length;
+  const readingTime = Math.max(1, Math.round(wordCount / 200));
   res.render("post", {
     title: data.title || req.params.slug,
     date: formatDate(data.date),
@@ -83,9 +97,14 @@ app.get("/post/:slug", (req, res) => {
     impact: data.impact || "",
     project: data.project || "",
     content: marked.parse(content),
+    readingTime,
     page: "post",
   });
 });
 
+
+app.get("/about", (req, res) => {
+  res.render("about", { page: "about" });
+});
 
 app.listen(PORT, () => console.log(`Blog running at http://localhost:${PORT}`));

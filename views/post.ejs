@@ -2,9 +2,9 @@
     <article class="post">
       <div class="post-header">
         <div class="post-meta">
-          <% if (project) { %><span class="badge badge-project"><%= project %></span><% } %>
           <% if (category) { %><span class="badge badge-category"><%= category %></span><% } %>
           <time><%= date %></time>
+          <span class="reading-time"><%= readingTime %> דק׳ קריאה</span>
         </div>
         <h1><%= title %></h1>
         <% if (impact) { %><div class="impact-banner"><%= impact %></div><% } %>

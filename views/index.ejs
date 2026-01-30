@@ -7,8 +7,8 @@
     </section>
     <% } else { %>
     <section class="hero">
-      <h1>מקרי בוחן</h1>
-      <p class="hero-sub">צלילות טכניות לפרויקטים של אוטומציה שנבנו עבור מריטל ועסקים נוספים.</p>
+      <h1>מאמרים</h1>
+      <p class="hero-sub">צלילות טכניות לפרויקטים של אוטומציה שנבנו עבור עסקים קטנים ובינוניים.</p>
     </section>
     <% } %>
 
@@ -22,7 +22,7 @@
         <a href="/post/<%= p.slug %>" class="featured-card">
           <div class="featured-card-inner">
             <div class="card-meta">
-              <% if (p.project) { %><span class="badge badge-project"><%= p.project %></span><% } %>
+
               <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
             </div>
             <h3><%= p.title %></h3>
@@ -42,13 +42,13 @@
     <% } %>
 
     <section class="posts-grid">
-      <% if (page === 'home' && featured.length > 0) { %><h2 class="section-title">כל הפוסטים</h2><% } %>
+      <% if (page === 'home' && featured.length > 0) { %><h2 class="section-title">כל המאמרים</h2><% } %>
       <div class="grid">
         <% const list = (page === 'home' && featured.length > 0) ? regular : posts; %>
         <% list.forEach(function(p) { %>
           <a href="/post/<%= p.slug %>" class="card">
             <div class="card-meta">
-              <% if (p.project) { %><span class="badge badge-project"><%= p.project %></span><% } %>
+
               <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
             </div>
             <h3><%= p.title %></h3>
@@ -63,6 +63,18 @@
               <% } %>
             </div>
           </a>
+        <% }) %>
+      </div>
+    </section>
+
+    <section class="tags-section">
+      <h2 class="section-title">נושאים</h2>
+      <div class="tags-search">
+        <input type="text" id="tag-search" placeholder="חיפוש נושא..." autocomplete="off">
+      </div>
+      <div class="tags-list" id="tags-list">
+        <% tags.forEach(function(tag) { %>
+          <button class="tag-btn" data-tag="<%= tag %>"><%= tag %></button>
         <% }) %>
       </div>
     </section>
