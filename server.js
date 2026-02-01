@@ -93,13 +93,27 @@ app.get("/post/:slug", (req, res) => {
   const readingTime = Math.max(1, Math.round(wordCount / 200));
   const excerpt = data.excerpt || "";
   const rawDate = data.date ? new Date(data.date).toISOString().split("T")[0] : "";
+  const currentTools = data.tools || [];
+  const currentCategory = data.category || "";
+  const currentDate = data.date ? new Date(data.date) : new Date();
+  const allPosts = getPosts().filter((p) => p.slug !== req.params.slug);
+  const related = allPosts
+    .map((p) => {
+      const sharedTools = currentTools.filter((t) => p.tools.includes(t)).length;
+      const catMatch = p.category && p.category === currentCategory ? 2 : 0;
+      const daysDiff = Math.abs(currentDate - new Date(p.rawDate)) / 86400000;
+      const recency = Math.max(0, 1 - daysDiff / 365);
+      return { ...p, score: sharedTools * 3 + catMatch + recency };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
   res.render("post", {
     title: data.title || req.params.slug,
     date: formatDate(data.date),
     rawDate,
     excerpt,
     category: data.category || "",
-    tools: data.tools || [],
+    tools: currentTools,
     impact: data.impact || "",
     project: data.project || "",
     content: marked.parse(content),
@@ -108,6 +122,7 @@ app.get("/post/:slug", (req, res) => {
     description: excerpt || data.title || "",
     path: `/post/${req.params.slug}`,
     siteUrl: SITE_URL,
+    related,
   });
 });
 

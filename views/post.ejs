@@ -18,4 +18,29 @@
         <%- content %>
       </div>
     </article>
+    <% if (related && related.length) { %>
+    <section class="related-posts">
+      <h2>מאמרים נוספים</h2>
+      <div class="card-grid">
+        <% related.forEach(function(p) { %>
+        <a href="/post/<%= p.slug %>" class="card">
+          <div class="card-badges">
+            <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
+          </div>
+          <h3><%= p.title %></h3>
+          <time datetime="<%= p.rawDate %>"><%= p.date %></time>
+          <p class="card-excerpt"><%= p.excerpt %></p>
+          <div class="card-bottom">
+            <% if (p.impact) { %><span class="impact"><%= p.impact %></span><% } %>
+            <% if (p.tools && p.tools.length) { %>
+            <div class="card-tools">
+              <% p.tools.forEach(function(t) { %><span class="tool-badge"><%= t %></span><% }) %>
+            </div>
+            <% } %>
+          </div>
+        </a>
+        <% }) %>
+      </div>
+    </section>
+    <% } %>
 <%- include('footer') %>

@@ -628,6 +628,18 @@ footer {
   border-color: var(--accent);
 }
 
+/* === Related Posts === */
+.related-posts {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.related-posts h2 {
+  margin-bottom: 1.25rem;
+  font-size: 1.3rem;
+}
+
 /* === Focus & Skip Link === */
 :focus-visible {
   outline: 2px solid var(--accent);
