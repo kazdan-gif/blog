@@ -4,13 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= typeof title !== 'undefined' && title ? title + ' — דוֹשי' : 'דוֹשי | AI לעסקים' %></title>
+  <% if (typeof description !== 'undefined' && description) { %>
+  <meta name="description" content="<%= description %>">
+  <% } %>
+  <link rel="canonical" href="<%= siteUrl %><%= path %>">
+  <link rel="alternate" hreflang="he" href="<%= siteUrl %><%= path %>">
+  <meta property="og:title" content="<%= typeof title !== 'undefined' && title ? title + ' — דוֹשי' : 'דוֹשי | AI לעסקים' %>">
+  <% if (typeof description !== 'undefined' && description) { %><meta property="og:description" content="<%= description %>"><% } %>
+  <meta property="og:url" content="<%= siteUrl %><%= path %>">
+  <meta property="og:type" content="<%= page === 'post' ? 'article' : 'website' %>">
+  <meta property="og:locale" content="he_IL">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="<%= typeof title !== 'undefined' && title ? title + ' — דוֹשי' : 'דוֹשי | AI לעסקים' %>">
+  <% if (typeof description !== 'undefined' && description) { %><meta name="twitter:description" content="<%= description %>"><% } %>
+  <link rel="icon" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.0/styles/github-dark.min.css" id="hljs-theme">
   <link rel="stylesheet" href="/style.css">
+  <% if (page === 'home') { %>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebSite","name":"דוֹשי","url":"<%= siteUrl %>","description":"AI לעסקים קטנים ובינוניים","inLanguage":"he"}
+  </script>
+  <% } %>
+  <% if (page === 'post' && typeof title !== 'undefined') { %>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BlogPosting","headline":"<%= title %>","url":"<%= siteUrl %><%= path %>"<% if (typeof rawDate !== 'undefined' && rawDate) { %>,"datePublished":"<%= rawDate %>"<% } %><% if (typeof description !== 'undefined' && description) { %>,"description":"<%= description %>"<% } %>,"inLanguage":"he","publisher":{"@type":"Organization","name":"דוֹשי"}}
+  </script>
+  <% } %>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-24MV7XLK9F"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-24MV7XLK9F');
+  </script>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">דלג לתוכן</a>
   <header>
     <nav>
       <a href="/" class="logo">דוֹשי<span class="logo-dot">.</span></a>
@@ -25,4 +58,4 @@
       </div>
     </nav>
   </header>
-  <main>
+  <main id="main-content">

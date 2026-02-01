@@ -34,7 +34,7 @@ const POSTS_DIR = path.join(__dirname, "posts");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public"), { maxAge: '7d' }));
 
 function getPosts(filter) {
   const files = fs.readdirSync(POSTS_DIR).filter((f) => f.endsWith(".md"));
@@ -45,7 +45,7 @@ function getPosts(filter) {
       slug: file.replace(/\.md$/, ""),
       title: data.title || file,
       date: formatDate(data.date),
-      rawDate: data.date || "",
+      rawDate: data.date ? new Date(data.date).toISOString().split("T")[0] : "",
       excerpt: data.excerpt || "",
       category: data.category || "",
       tools: data.tools || [],
@@ -71,15 +71,17 @@ function getAllTags() {
   return Array.from(tagSet).sort();
 }
 
+const SITE_URL = "https://doshi.kazdan.net";
+
 app.get("/", (req, res) => {
-  res.render("index", { posts: getPosts(), page: "home", tags: getAllTags() });
+  res.render("index", { posts: getPosts(), page: "home", tags: getAllTags(), description: "AI לעסקים קטנים ובינוניים — פתרונות אוטומציה, כלים אמיתיים, תוצאות אמיתיות", path: "/", siteUrl: SITE_URL });
 });
 
 app.get("/case-studies", (req, res) => res.redirect(301, "/articles"));
 
 app.get("/articles", (req, res) => {
   const posts = getPosts((p) => p.category && p.category !== "");
-  res.render("index", { posts, page: "articles", tags: getAllTags() });
+  res.render("index", { posts, page: "articles", tags: getAllTags(), description: "מאמרים — צלילות טכניות לפרויקטים של אוטומציה לעסקים", path: "/articles", siteUrl: SITE_URL });
 });
 
 app.get("/post/:slug", (req, res) => {
@@ -89,9 +91,13 @@ app.get("/post/:slug", (req, res) => {
   const { data, content } = matter(raw);
   const wordCount = content.split(/\s+/).length;
   const readingTime = Math.max(1, Math.round(wordCount / 200));
+  const excerpt = data.excerpt || "";
+  const rawDate = data.date ? new Date(data.date).toISOString().split("T")[0] : "";
   res.render("post", {
     title: data.title || req.params.slug,
     date: formatDate(data.date),
+    rawDate,
+    excerpt,
     category: data.category || "",
     tools: data.tools || [],
     impact: data.impact || "",
@@ -99,12 +105,45 @@ app.get("/post/:slug", (req, res) => {
     content: marked.parse(content),
     readingTime,
     page: "post",
+    description: excerpt || data.title || "",
+    path: `/post/${req.params.slug}`,
+    siteUrl: SITE_URL,
   });
 });
 
 
 app.get("/about", (req, res) => {
-  res.render("about", { page: "about" });
+  res.render("about", { page: "about", description: "אודות דוֹשי — AI לעסקים קטנים ובינוניים", path: "/about", siteUrl: SITE_URL });
+});
+
+app.get("/sitemap.xml", (req, res) => {
+  const posts = getPosts();
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  const pages = ["/", "/articles", "/about"];
+  pages.forEach((p) => {
+    xml += `  <url><loc>${SITE_URL}${p}</loc></url>\n`;
+  });
+  posts.forEach((p) => {
+    xml += `  <url><loc>${SITE_URL}/post/${p.slug}</loc>${p.rawDate ? `<lastmod>${new Date(p.rawDate).toISOString().split("T")[0]}</lastmod>` : ""}</url>\n`;
+  });
+  xml += `</urlset>`;
+  res.set("Content-Type", "application/xml");
+  res.send(xml);
+});
+
+app.get("/feed.xml", (req, res) => {
+  const posts = getPosts();
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n<channel>\n  <title>דוֹשי | AI לעסקים</title>\n  <link>${SITE_URL}</link>\n  <description>AI לעסקים קטנים ובינוניים</description>\n  <language>he</language>\n  <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml"/>\n`;
+  posts.slice(0, 20).forEach((p) => {
+    xml += `  <item>\n    <title>${p.title}</title>\n    <link>${SITE_URL}/post/${p.slug}</link>\n    <guid>${SITE_URL}/post/${p.slug}</guid>\n    ${p.rawDate ? `<pubDate>${new Date(p.rawDate).toUTCString()}</pubDate>` : ""}\n    ${p.excerpt ? `<description>${p.excerpt}</description>` : ""}\n  </item>\n`;
+  });
+  xml += `</channel>\n</rss>`;
+  res.set("Content-Type", "application/rss+xml");
+  res.send(xml);
+});
+
+app.use((req, res) => {
+  res.status(404).render("404", { page: "404", description: "הדף לא נמצא", path: req.path, siteUrl: SITE_URL });
 });
 
 app.listen(PORT, () => console.log(`Blog running at http://localhost:${PORT}`));

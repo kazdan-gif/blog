@@ -52,7 +52,7 @@
               <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
             </div>
             <h3><%= p.title %></h3>
-            <time><%= p.date %></time>
+            <time datetime="<%= p.rawDate %>"><%= p.date %></time>
             <p class="card-excerpt"><%= p.excerpt %></p>
             <div class="card-bottom">
               <% if (p.impact) { %><span class="impact"><%= p.impact %></span><% } %>
