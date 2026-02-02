@@ -483,6 +483,30 @@ pre:hover .copy-btn {
   color: var(--accent);
 }
 
+.about-author {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.about-author h2 {
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem;
+}
+
+.about-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
 .about-tools {
   margin-top: 0.5rem;
 }
