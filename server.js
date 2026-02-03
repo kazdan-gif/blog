@@ -10,6 +10,9 @@ const marked = new Marked(
   markedHighlight({
     langPrefix: "hljs language-",
     highlight(code, lang) {
+      if (lang === 'mermaid') {
+        return code; // Don't highlight mermaid - it will be rendered by mermaid.js
+      }
       if (lang && hljs.getLanguage(lang)) {
         return hljs.highlight(code, { language: lang }).value;
       }

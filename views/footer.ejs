@@ -24,12 +24,13 @@
     applyTheme(getTheme());
 
     // Mermaid — conditional load
-    if (document.querySelector('.language-mermaid')) {
+    var mermaidBlocks = document.querySelectorAll('code[class*="language-mermaid"]');
+    if (mermaidBlocks.length) {
       var s = document.createElement('script');
       s.src = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
       s.onload = function() {
         mermaid.initialize({ startOnLoad: false, theme: getTheme() === 'dark' ? 'dark' : 'default' });
-        document.querySelectorAll('pre code.language-mermaid, pre code.hljs.language-mermaid').forEach(function(el) {
+        mermaidBlocks.forEach(function(el) {
           var pre = el.parentElement;
           var div = document.createElement('div');
           div.className = 'mermaid';
