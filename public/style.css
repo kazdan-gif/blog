@@ -652,6 +652,59 @@ footer {
   border-color: var(--accent);
 }
 
+/* === Share Widget === */
+.share-widget {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.share-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.share-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.share-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.share-whatsapp:hover { color: #25D366; border-color: #25D366; }
+.share-twitter:hover { color: #1DA1F2; border-color: #1DA1F2; }
+.share-linkedin:hover { color: #0077B5; border-color: #0077B5; }
+.share-email:hover { color: var(--accent); border-color: var(--accent); }
+.share-copy:hover { color: var(--accent); border-color: var(--accent); }
+
+.share-copy.copied {
+  color: #059669;
+  border-color: #059669;
+}
+
 /* === Related Posts === */
 .related-posts {
   margin-top: 3rem;
@@ -660,8 +713,45 @@ footer {
 }
 
 .related-posts h2 {
-  margin-bottom: 1.25rem;
-  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.related-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s;
+}
+
+.related-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.related-card h3 {
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.related-card .badge {
+  font-size: 0.6rem;
+  width: fit-content;
 }
 
 /* === Focus & Skip Link === */
@@ -719,5 +809,18 @@ footer {
 
   .nav-links a {
     font-size: 0.8rem;
+  }
+
+  .related-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .share-widget {
+    flex-wrap: wrap;
+  }
+
+  .share-btn {
+    width: 36px;
+    height: 36px;
   }
 }

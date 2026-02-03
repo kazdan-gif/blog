@@ -78,6 +78,14 @@
       });
     }
 
+    // Copy page URL
+    function copyPageUrl(btn) {
+      navigator.clipboard.writeText(window.location.href).then(function() {
+        btn.classList.add('copied');
+        setTimeout(function() { btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
     // Copy buttons
     document.querySelectorAll('.post-content pre').forEach(function(pre) {
       var btn = document.createElement('button');
