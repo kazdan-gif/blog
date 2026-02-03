@@ -4,6 +4,7 @@ date: 2026-02-03
 excerpt: "בניית מנגנון אוטומטי שמנתב משוב לקוחות למשימות שירות או בקשות דירוג בגוגל."
 category: "אוטומציית שירות"
 tools: ["Make.com", "GreenAPI", "Gmail API", "HTTP Request"]
+tags: ["אוטומציה"]
 impact: "חיסכון של כ-4 שעות שבועיות בניהול משברים ושירות לקוחות"
 featured: false
 project: "מריטל"

@@ -4,6 +4,7 @@ date: 2026-01-29
 excerpt: "במקום לנסות \"לחנך\" את העסק לענות לטלפון בזמן עבודה פיזית, בניתי אוטומציה שסוגרת את הפער בין השטח למשרד."
 category: "אוטומציית תהליכים"
 tools: ["Make.com", "Gemini 1.5 Pro", "Airtable", "GreenAPI", "Zadarma"]
+tags: ["AI", "אוטומציה"]
 impact: "כ-10$/חודש — אפס לידים אבודים"
 featured: true
 project: "מריטל"

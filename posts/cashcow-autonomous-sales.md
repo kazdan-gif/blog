@@ -4,6 +4,7 @@ date: 2026-02-03
 excerpt: "בניית מעטפת אוטומציה סביב חנות ה-CashCow שמטפלת בתשלומים, לוגיסטיקה וטיוב נתונים ללא מגע יד אדם."
 category: "אוטומציית תהליכים"
 tools: ["Make.com", "GreenAPI", "Airtable", "Grow-Pay", "CashCow"]
+tags: ["אוטומציה"]
 impact: "כ-50$/חודש — חיסכון של עשרות שעות עבודה חודשיות"
 featured: true
 project: "מריטל"

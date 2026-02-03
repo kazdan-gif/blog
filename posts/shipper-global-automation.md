@@ -2,8 +2,9 @@
 title: "הלקוח יודע לפני ששאל: מעקב משלוחים פרואקטיבי עם Shipper Global"
 date: 2026-02-03
 excerpt: "לקוחה מתקשרת לברר על משלוח, והצוות בשטח. בניתי מערכת שמתממשקת ל-Shipper Global, מעדכנת סטטוסים אוטומטית, ושולחת הודעות פרואקטיביות ללקוחות."
-category: "אוטומציית לוגיסטיקה"
+category: "לוגיסטיקה"
 tools: ["Make.com", "Shipper Global", "Airtable", "CashCow API", "Gmail", "PHP"]
+tags: ["אוטומציה"]
 impact: "קרוב ל-0$ — אפס בירורי משלוחים ידניים"
 featured: false
 project: "מריטל"

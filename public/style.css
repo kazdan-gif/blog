@@ -16,6 +16,8 @@
   --badge-project-text: #6366f1;
   --badge-category-bg: #ecfdf5;
   --badge-category-text: #059669;
+  --badge-tag-bg: #fef3c7;
+  --badge-tag-text: #d97706;
   --impact-bg: #fef3c7;
   --impact-text: #92400e;
   --code-bg: #f8fafc;
@@ -40,6 +42,8 @@
   --badge-project-text: #c4b5fd;
   --badge-category-bg: #064e3b;
   --badge-category-text: #6ee7b7;
+  --badge-tag-bg: #78350f;
+  --badge-tag-text: #fcd34d;
   --impact-bg: #78350f;
   --impact-text: #fde68a;
   --code-bg: #151d2e;
@@ -277,6 +281,11 @@ main {
 .badge-category {
   background: var(--badge-category-bg);
   color: var(--badge-category-text);
+}
+
+.badge-tag {
+  background: var(--badge-tag-bg);
+  color: var(--badge-tag-text);
 }
 
 /* === Tools === */

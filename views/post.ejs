@@ -3,6 +3,7 @@
       <div class="post-header">
         <div class="post-meta">
           <% if (category) { %><span class="badge badge-category"><%= category %></span><% } %>
+          <% if (tags && tags.length) { tags.forEach(function(tag) { %><span class="badge badge-tag"><%= tag %></span><% }) } %>
           <time datetime="<%= rawDate %>"><%= date %></time>
           <span class="reading-time"><%= readingTime %> דק׳ קריאה</span>
         </div>
