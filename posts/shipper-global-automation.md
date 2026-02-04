@@ -5,7 +5,7 @@ excerpt: "לקוחה מתקשרת לברר על משלוח, והצוות בשט�
 category: "לוגיסטיקה"
 tools: ["Make.com", "Shipper Global", "Airtable", "CashCow API", "Gmail", "PHP", "Claude Code"]
 tags: ["AI", "אוטומציה"]
-impact: "קרוב ל-0$ — אפס בירורי משלוחים ידניים"
+impact: "אוטומציה של מעקב משלוחים ועדכוני לקוח"
 featured: false
 project: "מריטל"
 ---
