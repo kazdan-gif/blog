@@ -5,7 +5,7 @@ excerpt: "בניית מנגנון אוטומטי שמנתב משוב לקוחו�
 category: "אוטומציית שירות"
 tools: ["Make.com", "GreenAPI", "Gmail API", "HTTP Request"]
 tags: ["אוטומציה"]
-impact: "חיסכון של כ-4 שעות שבועיות בניהול משברים ושירות לקוחות"
+impact: "אוטומציה מלאה בניהול משברים ושירות לקוחות"
 featured: false
 project: "מריטל"
 ---
