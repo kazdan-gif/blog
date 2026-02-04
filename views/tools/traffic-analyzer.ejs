@@ -45,6 +45,50 @@
         <li>העלו את קובץ ה-CSV לכאן</li>
       </ol>
     </details>
+
+    <details class="export-guide demo-section">
+      <summary>דוגמה לדוח שיופק</summary>
+      <div class="demo-content">
+        <p class="demo-note">להלן דוגמה לדוח עם נתונים להמחשה בלבד:</p>
+
+        <div class="demo-cards">
+          <div class="demo-card">
+            <span class="demo-label">סה״כ הזמנות</span>
+            <span class="demo-value">1,247</span>
+          </div>
+          <div class="demo-card">
+            <span class="demo-label">סה״כ הכנסות</span>
+            <span class="demo-value">₪523,450</span>
+          </div>
+          <div class="demo-card">
+            <span class="demo-label">ממוצע הזמנה</span>
+            <span class="demo-value">₪419.77</span>
+          </div>
+        </div>
+
+        <h4>ביצועי ערוצים</h4>
+        <table class="demo-table">
+          <thead>
+            <tr><th>ערוץ</th><th>הזמנות</th><th>הכנסות</th><th>% הכנסות</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Direct</td><td>412</td><td>₪187,230</td><td>35.8%</td></tr>
+            <tr><td>Paid Search</td><td>389</td><td>₪162,540</td><td>31.1%</td></tr>
+            <tr><td>Organic Search</td><td>298</td><td>₪119,680</td><td>22.9%</td></tr>
+            <tr><td>Email Marketing</td><td>87</td><td>₪35,420</td><td>6.8%</td></tr>
+            <tr><td>Referral</td><td>61</td><td>₪18,580</td><td>3.5%</td></tr>
+          </tbody>
+        </table>
+
+        <h4>תובנות לדוגמה</h4>
+        <div class="demo-insight">
+          <strong>ערוץ מוביל:</strong> Direct מייצר 35.8% מההכנסות - הלקוחות מכירים את המותג!
+        </div>
+        <div class="demo-insight">
+          <strong>הזדמנות:</strong> Email Marketing מציג ממוצע הזמנה גבוה (₪407) - שווה להגדיל השקעה.
+        </div>
+      </div>
+    </details>
   </section>
 
   <!-- Loading -->
@@ -63,6 +107,12 @@
   <div class="alert alert-warning" id="warningMessage">
     <span class="alert-icon">!</span>
     <span id="warningText"></span>
+  </div>
+
+  <!-- Success Message -->
+  <div class="alert alert-success" id="successMessage">
+    <span class="success-icon">✓</span>
+    <span>ניתוח הנתונים הושלם בהצלחה! להלן התוצאות שלך.</span>
   </div>
 
   <!-- Results -->
@@ -284,6 +334,7 @@
     loadingOverlay.classList.add('active');
     errorMessage.classList.remove('active');
     warningMessage.classList.remove('active');
+    document.getElementById('successMessage').classList.remove('active');
   }
 
   function hideLoading() {
@@ -623,6 +674,13 @@
     }
     renderInsights(data.insights);
     if (data.warning) showWarning(data.warning);
+
+    // Show success message
+    document.getElementById('successMessage').classList.add('active');
+
+    // Scroll to results
+    document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
     results.classList.add('active');
 
     // Track tool usage in GA4
@@ -799,6 +857,134 @@
 
 .export-guide ul li {
   margin-bottom: 0.25rem;
+}
+
+/* Demo Section */
+.demo-section {
+  margin-top: 0.5rem;
+}
+
+.demo-content {
+  padding: 0 1rem 1rem 1rem;
+}
+
+.demo-note {
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.demo-cards {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.demo-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+}
+
+.demo-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.demo-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.demo-content h4 {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+.demo-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.demo-table th,
+.demo-table td {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  text-align: right;
+}
+
+.demo-table th {
+  background: var(--bg-secondary);
+  font-weight: 600;
+}
+
+.demo-insight {
+  background: rgba(102, 126, 234, 0.05);
+  border-right: 3px solid #667eea;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Success Message */
+.alert-success {
+  display: none;
+  background: #c6f6d5;
+  color: #276749;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  animation: slideIn 0.3s ease;
+}
+
+[data-theme="dark"] .alert-success {
+  background: rgba(72, 187, 120, 0.2);
+  color: #68d391;
+}
+
+.alert-success.active {
+  display: flex;
+}
+
+.success-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #276749;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .success-icon {
+  background: #48bb78;
+  color: #1a202c;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Loading */
