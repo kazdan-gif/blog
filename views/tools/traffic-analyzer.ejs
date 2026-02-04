@@ -1,0 +1,1149 @@
+<%- include('../header') %>
+
+<div class="tool-page traffic-analyzer">
+  <div class="tool-header">
+    <h1>מנתח מקורות תנועה</h1>
+    <p class="tool-subtitle">נתח את יצוא הזמנות CashCow שלך לתובנות שיווקיות</p>
+  </div>
+
+  <!-- Upload Section -->
+  <section class="upload-section">
+    <div class="upload-area" id="uploadArea">
+      <div class="upload-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+      </div>
+      <h3>גרור ושחרר קובץ כאן</h3>
+      <p>או לחץ לבחירת קובץ</p>
+      <p class="file-types">תומך בקבצי CSV (מומלץ) ו-Excel (.xlsx, .xls) עד 50MB</p>
+      <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" hidden>
+    </div>
+    <div class="upload-info">
+      <strong>עמודות נדרשות:</strong> traffic_source, order_total_price, order_id
+    </div>
+
+    <details class="export-guide">
+      <summary>איך לייצא את הקובץ מ-CashCow?</summary>
+      <ol>
+        <li>היכנסו לאזור <strong>הזמנות</strong> במערכת הניהול של CashCow</li>
+        <li>בחרו את <strong>טווח התאריכים</strong> הרצוי ולחצו <strong>חפש</strong></li>
+        <li>לחצו על <strong>ייצוא מותאם אישית</strong></li>
+        <li>וודאו שהשדות הבאים מסומנים:
+          <ul>
+            <li>תאריך הזמנה (order_date)</li>
+            <li>מחיר סה״כ (order_total_price)</li>
+            <li>מקור תנועה (traffic_source)</li>
+            <li>מזהה הזמנה (order_id)</li>
+          </ul>
+        </li>
+        <li>לחצו <strong>ייצא</strong> להורדת קובץ Excel</li>
+        <li>פתחו את הקובץ ב-Excel ושמרו כ-<strong>CSV UTF-8</strong>:<br>
+            קובץ → שמור בשם → בחרו "CSV UTF-8 (מופרד בפסיקים)"</li>
+        <li>העלו את קובץ ה-CSV לכאן</li>
+      </ol>
+    </details>
+  </section>
+
+  <!-- Loading -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <p>מנתח את הנתונים...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div class="alert alert-error" id="errorMessage">
+    <span class="alert-icon">!</span>
+    <span id="errorText"></span>
+  </div>
+
+  <!-- Warning Message -->
+  <div class="alert alert-warning" id="warningMessage">
+    <span class="alert-icon">!</span>
+    <span id="warningText"></span>
+  </div>
+
+  <!-- Results -->
+  <div class="results" id="results">
+    <!-- Summary Cards -->
+    <section class="summary-section">
+      <h2>סיכום</h2>
+      <div class="summary-cards">
+        <div class="summary-card">
+          <div class="card-icon orders-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </div>
+          <div class="card-content">
+            <span class="card-label">סה״כ הזמנות</span>
+            <span class="card-value" id="totalOrders">0</span>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="card-icon revenue-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="card-content">
+            <span class="card-label">סה״כ הכנסות</span>
+            <span class="card-value" id="totalRevenue">₪0</span>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="card-icon aov-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="card-content">
+            <span class="card-label">ממוצע הזמנה</span>
+            <span class="card-value" id="avgOrderValue">₪0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Channel Performance -->
+    <section class="analysis-section">
+      <h2>ביצועי ערוצים</h2>
+      <div class="chart-table-container">
+        <div class="chart-container">
+          <canvas id="channelChart"></canvas>
+        </div>
+        <div class="table-container">
+          <table class="data-table" id="channelTable">
+            <thead>
+              <tr>
+                <th>ערוץ</th>
+                <th>הזמנות</th>
+                <th>הכנסות</th>
+                <th>ממוצע</th>
+                <th>% הכנסות</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Traffic Sources -->
+    <section class="analysis-section">
+      <h2>מקורות תנועה מובילים</h2>
+      <div class="chart-table-container reverse">
+        <div class="table-container">
+          <table class="data-table" id="sourcesTable">
+            <thead>
+              <tr>
+                <th>מקור</th>
+                <th>הזמנות</th>
+                <th>הכנסות</th>
+                <th>ממוצע</th>
+                <th>% הכנסות</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="chart-container">
+          <canvas id="sourcesChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Medium Performance -->
+    <section class="analysis-section">
+      <h2>ביצועי מדיום</h2>
+      <div class="table-only-container">
+        <table class="data-table" id="mediumsTable">
+          <thead>
+            <tr>
+              <th>מדיום</th>
+              <th>הזמנות</th>
+              <th>הכנסות</th>
+              <th>ממוצע</th>
+              <th>% הכנסות</th>
+              <th>התפלגות</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Top Combinations -->
+    <section class="analysis-section">
+      <h2>שילובי מקור + מדיום מובילים</h2>
+      <div class="table-only-container">
+        <table class="data-table" id="combinationsTable">
+          <thead>
+            <tr>
+              <th>מקור</th>
+              <th>מדיום</th>
+              <th>הזמנות</th>
+              <th>הכנסות</th>
+              <th>ממוצע</th>
+              <th>% הכנסות</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Email Campaigns -->
+    <section class="analysis-section" id="emailSection" style="display: none;">
+      <h2>ביצועי קמפיינים באימייל (Flashyapp)</h2>
+      <div class="table-only-container">
+        <table class="data-table" id="emailTable">
+          <thead>
+            <tr>
+              <th>מזהה קמפיין</th>
+              <th>הזמנות</th>
+              <th>הכנסות</th>
+              <th>ממוצע</th>
+              <th>% הכנסות</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Monthly Breakdown -->
+    <section class="analysis-section" id="monthlySection" style="display: none;">
+      <h2>ביצועים לפי חודש</h2>
+      <div class="chart-table-container">
+        <div class="chart-container" style="min-height: 300px;">
+          <canvas id="monthlyChart"></canvas>
+        </div>
+        <div class="table-container">
+          <table class="data-table" id="monthlyTable">
+            <thead>
+              <tr>
+                <th>חודש</th>
+                <th>הזמנות</th>
+                <th>הכנסות</th>
+                <th>ממוצע</th>
+                <th>% הכנסות</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Insights -->
+    <section class="insights-section">
+      <h2>תובנות והמלצות</h2>
+      <div class="insights-container" id="insightsContainer"></div>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(function() {
+  let channelChart = null;
+  let sourcesChart = null;
+  let monthlyChart = null;
+
+  const uploadArea = document.getElementById('uploadArea');
+  const fileInput = document.getElementById('fileInput');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const errorMessage = document.getElementById('errorMessage');
+  const errorText = document.getElementById('errorText');
+  const warningMessage = document.getElementById('warningMessage');
+  const warningText = document.getElementById('warningText');
+  const results = document.getElementById('results');
+
+  const chartColors = ['#667eea', '#764ba2', '#11998e', '#38ef7d', '#f093fb', '#f5576c', '#4facfe', '#00f2fe', '#43e97b', '#fa709a'];
+
+  function formatCurrency(value) {
+    return '₪' + value.toLocaleString('he-IL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function formatNumber(value) {
+    return value.toLocaleString('he-IL');
+  }
+
+  function formatPercent(value) {
+    return value.toFixed(1) + '%';
+  }
+
+  function showLoading() {
+    loadingOverlay.classList.add('active');
+    errorMessage.classList.remove('active');
+    warningMessage.classList.remove('active');
+  }
+
+  function hideLoading() {
+    loadingOverlay.classList.remove('active');
+  }
+
+  function showError(message) {
+    errorText.textContent = message;
+    errorMessage.classList.add('active');
+    warningMessage.classList.remove('active');
+    results.classList.remove('active');
+  }
+
+  function showWarning(message) {
+    warningText.textContent = message;
+    warningMessage.classList.add('active');
+  }
+
+  function createProgressBar(percentage) {
+    return '<div class="progress-bar"><div class="progress-bar-fill" style="width: ' + Math.min(percentage, 100) + '%"></div></div>';
+  }
+
+  function renderSummary(summary) {
+    document.getElementById('totalOrders').textContent = formatNumber(summary.total_orders);
+    document.getElementById('totalRevenue').textContent = formatCurrency(summary.total_revenue);
+    document.getElementById('avgOrderValue').textContent = formatCurrency(summary.avg_order_value);
+  }
+
+  function renderChannelChart(channels) {
+    const ctx = document.getElementById('channelChart').getContext('2d');
+    if (channelChart) channelChart.destroy();
+
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+    channelChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: channels.map(c => c.name),
+        datasets: [{
+          data: channels.map(c => c.revenue),
+          backgroundColor: chartColors.slice(0, channels.length),
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { padding: 15, usePointStyle: true, color: isDark ? '#e2e8f0' : '#2d3748' }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const value = context.parsed;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return context.label + ': ' + formatCurrency(value) + ' (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function renderSourcesChart(sources) {
+    const ctx = document.getElementById('sourcesChart').getContext('2d');
+    if (sourcesChart) sourcesChart.destroy();
+
+    const topSources = sources.slice(0, 10);
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+    sourcesChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: topSources.map(s => s.name),
+        datasets: [{
+          label: 'הכנסות',
+          data: topSources.map(s => s.revenue),
+          backgroundColor: 'rgba(102, 126, 234, 0.8)',
+          borderColor: '#667eea',
+          borderWidth: 1,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return formatCurrency(context.parsed.x);
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) { return '₪' + (value / 1000).toFixed(0) + 'K'; },
+              color: isDark ? '#a0aec0' : '#718096'
+            },
+            grid: { color: isDark ? '#4a5568' : '#e2e8f0' }
+          },
+          y: {
+            ticks: { color: isDark ? '#a0aec0' : '#718096' },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  }
+
+  function renderChannelTable(channels) {
+    const tbody = document.querySelector('#channelTable tbody');
+    tbody.innerHTML = '';
+    channels.forEach(function(channel) {
+      const row = document.createElement('tr');
+      row.innerHTML = '<td><strong>' + channel.name + '</strong></td>' +
+        '<td class="number">' + formatNumber(channel.orders) + '</td>' +
+        '<td class="number">' + formatCurrency(channel.revenue) + '</td>' +
+        '<td class="number">' + formatCurrency(channel.avg_order_value) + '</td>' +
+        '<td><div style="display:flex;align-items:center;gap:0.5rem"><span class="number">' + formatPercent(channel.revenue_pct) + '</span>' + createProgressBar(channel.revenue_pct) + '</div></td>';
+      tbody.appendChild(row);
+    });
+  }
+
+  function renderSourcesTable(sources) {
+    const tbody = document.querySelector('#sourcesTable tbody');
+    tbody.innerHTML = '';
+    sources.slice(0, 15).forEach(function(source) {
+      const row = document.createElement('tr');
+      row.innerHTML = '<td><strong>' + source.name + '</strong></td>' +
+        '<td class="number">' + formatNumber(source.orders) + '</td>' +
+        '<td class="number">' + formatCurrency(source.revenue) + '</td>' +
+        '<td class="number">' + formatCurrency(source.avg_order_value) + '</td>' +
+        '<td><div style="display:flex;align-items:center;gap:0.5rem"><span class="number">' + formatPercent(source.revenue_pct) + '</span>' + createProgressBar(source.revenue_pct) + '</div></td>';
+      tbody.appendChild(row);
+    });
+  }
+
+  function renderMediumsTable(mediums) {
+    const tbody = document.querySelector('#mediumsTable tbody');
+    tbody.innerHTML = '';
+    mediums.forEach(function(medium) {
+      const row = document.createElement('tr');
+      row.innerHTML = '<td><strong>' + medium.name + '</strong></td>' +
+        '<td class="number">' + formatNumber(medium.orders) + '</td>' +
+        '<td class="number">' + formatCurrency(medium.revenue) + '</td>' +
+        '<td class="number">' + formatCurrency(medium.avg_order_value) + '</td>' +
+        '<td class="number">' + formatPercent(medium.revenue_pct) + '</td>' +
+        '<td>' + createProgressBar(medium.revenue_pct) + '</td>';
+      tbody.appendChild(row);
+    });
+  }
+
+  function renderCombinationsTable(combinations) {
+    const tbody = document.querySelector('#combinationsTable tbody');
+    tbody.innerHTML = '';
+    combinations.forEach(function(combo) {
+      const row = document.createElement('tr');
+      row.innerHTML = '<td><strong>' + combo.source + '</strong></td>' +
+        '<td>' + combo.medium + '</td>' +
+        '<td class="number">' + formatNumber(combo.orders) + '</td>' +
+        '<td class="number">' + formatCurrency(combo.revenue) + '</td>' +
+        '<td class="number">' + formatCurrency(combo.avg_order_value) + '</td>' +
+        '<td class="number">' + formatPercent(combo.revenue_pct) + '</td>';
+      tbody.appendChild(row);
+    });
+  }
+
+  function renderEmailCampaigns(campaigns) {
+    const section = document.getElementById('emailSection');
+    const tbody = document.querySelector('#emailTable tbody');
+    tbody.innerHTML = '';
+    if (!campaigns || campaigns.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+    section.style.display = 'block';
+    campaigns.forEach(function(campaign) {
+      const row = document.createElement('tr');
+      row.innerHTML = '<td><strong>Automation #' + campaign.campaign_id + '</strong></td>' +
+        '<td class="number">' + formatNumber(campaign.orders) + '</td>' +
+        '<td class="number">' + formatCurrency(campaign.revenue) + '</td>' +
+        '<td class="number">' + formatCurrency(campaign.avg_order_value) + '</td>' +
+        '<td class="number">' + formatPercent(campaign.revenue_pct) + '</td>';
+      tbody.appendChild(row);
+    });
+  }
+
+  function renderMonthlyChart(monthly) {
+    const ctx = document.getElementById('monthlyChart').getContext('2d');
+    if (monthlyChart) monthlyChart.destroy();
+
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+    monthlyChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: monthly.map(m => m.month_display),
+        datasets: [
+          {
+            label: 'הכנסות',
+            data: monthly.map(m => m.revenue),
+            backgroundColor: 'rgba(102, 126, 234, 0.8)',
+            borderColor: '#667eea',
+            borderWidth: 1,
+            borderRadius: 4,
+            yAxisID: 'y'
+          },
+          {
+            label: 'הזמנות',
+            data: monthly.map(m => m.orders),
+            type: 'line',
+            borderColor: '#38ef7d',
+            backgroundColor: 'rgba(56, 239, 125, 0.1)',
+            borderWidth: 2,
+            pointRadius: 4,
+            pointBackgroundColor: '#38ef7d',
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { color: isDark ? '#e2e8f0' : '#2d3748' }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                if (context.dataset.label === 'הכנסות') {
+                  return 'הכנסות: ' + formatCurrency(context.parsed.y);
+                }
+                return 'הזמנות: ' + formatNumber(context.parsed.y);
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: isDark ? '#a0aec0' : '#718096' },
+            grid: { display: false }
+          },
+          y: {
+            type: 'linear',
+            position: 'right',
+            ticks: {
+              callback: function(value) { return '₪' + (value / 1000).toFixed(0) + 'K'; },
+              color: isDark ? '#a0aec0' : '#718096'
+            },
+            grid: { color: isDark ? '#4a5568' : '#e2e8f0' }
+          },
+          y1: {
+            type: 'linear',
+            position: 'left',
+            ticks: { color: isDark ? '#a0aec0' : '#718096' },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  }
+
+  function renderMonthlyTable(monthly) {
+    const section = document.getElementById('monthlySection');
+    const tbody = document.querySelector('#monthlyTable tbody');
+    tbody.innerHTML = '';
+    if (!monthly || monthly.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+    section.style.display = 'block';
+    monthly.forEach(function(m) {
+      const row = document.createElement('tr');
+      row.innerHTML = '<td><strong>' + m.month_display + '</strong></td>' +
+        '<td class="number">' + formatNumber(m.orders) + '</td>' +
+        '<td class="number">' + formatCurrency(m.revenue) + '</td>' +
+        '<td class="number">' + formatCurrency(m.avg_order_value) + '</td>' +
+        '<td><div style="display:flex;align-items:center;gap:0.5rem"><span class="number">' + formatPercent(m.revenue_pct) + '</span>' + createProgressBar(m.revenue_pct) + '</div></td>';
+      tbody.appendChild(row);
+    });
+  }
+
+  function getInsightIcon(type) {
+    const icons = {
+      trophy: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
+      gem: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>',
+      alert: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+      chart: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+      rocket: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>',
+      mail: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>'
+    };
+    return icons[type] || icons.chart;
+  }
+
+  function renderInsights(insights) {
+    const container = document.getElementById('insightsContainer');
+    container.innerHTML = '';
+    if (!insights || insights.length === 0) {
+      container.innerHTML = '<p class="text-muted">אין תובנות זמינות עבור נתונים אלה.</p>';
+      return;
+    }
+    insights.forEach(function(insight) {
+      const card = document.createElement('div');
+      card.className = 'insight-card ' + insight.type;
+      card.innerHTML = '<span class="insight-icon">' + getInsightIcon(insight.icon) + '</span>' +
+        '<div class="insight-content"><div class="insight-title">' + insight.title + '</div>' +
+        '<div class="insight-text">' + insight.text + '</div></div>';
+      container.appendChild(card);
+    });
+  }
+
+  function renderResults(data) {
+    renderSummary(data.summary);
+    renderChannelChart(data.channels);
+    renderSourcesChart(data.sources);
+    renderChannelTable(data.channels);
+    renderSourcesTable(data.sources);
+    renderMediumsTable(data.mediums);
+    renderCombinationsTable(data.combinations);
+    renderEmailCampaigns(data.email_campaigns);
+    if (data.monthly && data.monthly.length > 0) {
+      renderMonthlyChart(data.monthly);
+      renderMonthlyTable(data.monthly);
+    }
+    renderInsights(data.insights);
+    if (data.warning) showWarning(data.warning);
+    results.classList.add('active');
+
+    // Track tool usage in GA4
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'tool_usage', {
+        'tool_name': 'traffic_analyzer',
+        'total_orders': data.summary.total_orders,
+        'total_revenue': data.summary.total_revenue
+      });
+    }
+  }
+
+  async function analyzeFile(file) {
+    showLoading();
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('/api/analyze-traffic', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'שגיאה בניתוח הקובץ');
+      hideLoading();
+      renderResults(data);
+    } catch (error) {
+      hideLoading();
+      showError(error.message);
+    }
+  }
+
+  function handleFileSelect(file) {
+    if (!file) return;
+    const validExtensions = ['.csv', '.xlsx', '.xls'];
+    const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+    if (!validExtensions.includes(fileExtension)) {
+      showError('סוג קובץ לא חוקי. אנא העלה קובץ CSV או Excel (.xlsx, .xls).');
+      return;
+    }
+    if (file.size > 50 * 1024 * 1024) {
+      showError('הקובץ גדול מדי. גודל מקסימלי הוא 50MB.');
+      return;
+    }
+    analyzeFile(file);
+  }
+
+  uploadArea.addEventListener('click', function() { fileInput.click(); });
+  fileInput.addEventListener('change', function(e) { handleFileSelect(e.target.files[0]); });
+  uploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+  });
+  uploadArea.addEventListener('dragleave', function() {
+    uploadArea.classList.remove('dragover');
+  });
+  uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    handleFileSelect(e.dataTransfer.files[0]);
+  });
+  window.addEventListener('dragover', function(e) { e.preventDefault(); });
+  window.addEventListener('drop', function(e) { e.preventDefault(); });
+})();
+</script>
+
+<style>
+/* Traffic Analyzer Tool Styles */
+.tool-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.tool-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.tool-header h1 {
+  font-size: 2rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.tool-subtitle {
+  color: var(--text-secondary);
+}
+
+/* Upload Section */
+.upload-section {
+  margin-bottom: 2rem;
+}
+
+.upload-area {
+  background: var(--card-bg);
+  border: 3px dashed var(--border-color);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-area:hover,
+.upload-area.dragover {
+  border-color: #667eea;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+}
+
+.upload-area.dragover {
+  transform: scale(1.02);
+}
+
+.upload-icon {
+  color: #667eea;
+  margin-bottom: 1rem;
+}
+
+.upload-area h3 {
+  margin-bottom: 0.5rem;
+}
+
+.file-types {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 1rem;
+}
+
+.upload-info {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.export-guide {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.export-guide summary {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.export-guide summary:hover {
+  background: var(--bg-secondary);
+}
+
+.export-guide ol {
+  padding: 0 1.5rem 1rem 2.5rem;
+  margin: 0;
+}
+
+.export-guide li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.export-guide ul {
+  margin: 0.5rem 0;
+  padding-right: 1.5rem;
+}
+
+.export-guide ul li {
+  margin-bottom: 0.25rem;
+}
+
+/* Loading */
+.loading-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+[data-theme="dark"] .loading-overlay {
+  background: rgba(26, 32, 44, 0.9);
+}
+
+.loading-overlay.active {
+  display: flex;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--border-color);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Alerts */
+.alert {
+  display: none;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.alert.active {
+  display: flex;
+}
+
+.alert-error {
+  background: #fed7d7;
+  color: #c53030;
+}
+
+.alert-warning {
+  background: #fefcbf;
+  color: #744210;
+}
+
+[data-theme="dark"] .alert-error {
+  background: rgba(254, 178, 178, 0.2);
+  color: #fc8181;
+}
+
+[data-theme="dark"] .alert-warning {
+  background: rgba(236, 201, 75, 0.2);
+  color: #ecc94b;
+}
+
+.alert-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  flex-shrink: 0;
+  background: currentColor;
+  color: white;
+}
+
+.alert-error .alert-icon { background: #c53030; }
+.alert-warning .alert-icon { background: #d69e2e; }
+
+/* Results */
+.results {
+  display: none;
+}
+
+.results.active {
+  display: block;
+}
+
+/* Summary Cards */
+.summary-section {
+  margin-bottom: 2rem;
+}
+
+.summary-section h2 {
+  margin-bottom: 1rem;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.summary-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.orders-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+.revenue-icon { background: linear-gradient(135deg, #11998e, #38ef7d); }
+.aov-icon { background: linear-gradient(135deg, #f093fb, #f5576c); }
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Analysis Sections */
+.analysis-section,
+.insights-section {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.analysis-section h2,
+.insights-section h2 {
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.chart-table-container {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.chart-table-container.reverse {
+  grid-template-columns: 1.5fr 1fr;
+}
+
+.chart-container {
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.table-only-container {
+  overflow-x: auto;
+}
+
+/* Data Tables */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.data-table th {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 0.75rem 1rem;
+  text-align: right;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.data-table th:first-child {
+  border-radius: 0 8px 0 0;
+}
+
+.data-table th:last-child {
+  border-radius: 8px 0 0 0;
+}
+
+.data-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.data-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.data-table tbody tr:hover {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.number {
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+  direction: ltr;
+}
+
+/* Progress Bars */
+.progress-bar {
+  background: var(--border-color);
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+  min-width: 80px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* Insights */
+.insights-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.insight-card {
+  padding: 1.25rem;
+  border-radius: 12px;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.insight-card.success {
+  background: rgba(72, 187, 120, 0.1);
+  border-right: 4px solid #48bb78;
+}
+
+.insight-card.warning {
+  background: rgba(236, 201, 75, 0.1);
+  border-right: 4px solid #ecc94b;
+}
+
+.insight-card.info {
+  background: rgba(102, 126, 234, 0.1);
+  border-right: 4px solid #667eea;
+}
+
+.insight-icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.insight-card.success .insight-icon { color: #48bb78; }
+.insight-card.warning .insight-icon { color: #d69e2e; }
+.insight-card.info .insight-icon { color: #667eea; }
+
+.insight-content {
+  flex: 1;
+}
+
+.insight-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.insight-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .chart-table-container,
+  .chart-table-container.reverse {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-container {
+    order: -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .tool-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .upload-area {
+    padding: 1.5rem 1rem;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .data-table {
+    font-size: 0.8rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.5rem;
+  }
+}
+</style>
+
+<%- include('../footer') %>
