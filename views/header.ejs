@@ -33,13 +33,19 @@
   {"@context":"https://schema.org","@type":"BlogPosting","headline":"<%= title %>","url":"<%= siteUrl %><%= path %>"<% if (typeof rawDate !== 'undefined' && rawDate) { %>,"datePublished":"<%= rawDate %>"<% } %><% if (typeof description !== 'undefined' && description) { %>,"description":"<%= description %>"<% } %>,"inLanguage":"he","publisher":{"@type":"Organization","name":"דוֹשי"}}
   </script>
   <% } %>
-  <!-- Google Analytics -->
+  <!-- Google Analytics 4 - Enhanced -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-24MV7XLK9F"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-24MV7XLK9F');
+    gtag('config', 'G-24MV7XLK9F', {
+      'send_page_view': true,
+      'linker': {
+        'domains': ['doshi.kazdan.net', 'merital.co.il']
+      },
+      'cookie_flags': 'SameSite=None;Secure'
+    });
   </script>
 </head>
 <body>

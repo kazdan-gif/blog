@@ -102,6 +102,55 @@
       pre.style.position = 'relative';
       pre.appendChild(btn);
     });
+
+    // GA4 Custom Events
+
+    // 1. Track clicks on technology/tool badges
+    document.querySelectorAll('.tool-badge, .badge-tag, .tag-btn').forEach(function(tag) {
+      tag.addEventListener('click', function() {
+        gtag('event', 'select_content', {
+          'content_type': 'technology_tag',
+          'item_id': this.innerText.trim()
+        });
+      });
+    });
+
+    // 2. Track scroll depth milestones (25%, 50%, 75%, 100%)
+    var scrollMilestones = [25, 50, 75, 100];
+    var milestonesReached = {};
+    window.addEventListener('scroll', function() {
+      var scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      scrollMilestones.forEach(function(m) {
+        if (scrollPercent >= m && !milestonesReached[m]) {
+          milestonesReached[m] = true;
+          gtag('event', 'article_depth', {
+            'percentage': m,
+            'page_title': document.title
+          });
+        }
+      });
+    });
+
+    // 3. Track outbound tool/affiliate link clicks
+    document.querySelectorAll('a').forEach(function(link) {
+      if (link.hostname && link.hostname !== window.location.hostname) {
+        link.addEventListener('click', function() {
+          gtag('event', 'outbound_tool_click', {
+            'destination': this.href,
+            'tool_name': this.innerText.trim() || this.hostname
+          });
+        });
+      }
+    });
+
+    // 4. Track code copy events
+    document.querySelectorAll('.copy-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        gtag('event', 'copy_code', {
+          'page_title': document.title
+        });
+      });
+    });
   </script>
 </body>
 </html>
