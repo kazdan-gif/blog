@@ -34,6 +34,18 @@ function formatDate(d) {
 const app = express();
 const PORT = process.env.PORT || 3000;
 const POSTS_DIR = path.join(__dirname, "posts");
+const IMAGES_DIR = path.join(__dirname, "public", "images");
+
+// Check if post image exists (supports jpg, png, webp)
+function getPostImage(slug) {
+  const extensions = ['jpg', 'jpeg', 'png', 'webp'];
+  for (const ext of extensions) {
+    if (fs.existsSync(path.join(IMAGES_DIR, `${slug}.${ext}`))) {
+      return `/images/${slug}.${ext}`;
+    }
+  }
+  return null;
+}
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -44,8 +56,9 @@ function getPosts(filter) {
   let posts = files.map((file) => {
     const raw = fs.readFileSync(path.join(POSTS_DIR, file), "utf8");
     const { data } = matter(raw);
+    const slug = file.replace(/\.md$/, "");
     return {
-      slug: file.replace(/\.md$/, ""),
+      slug,
       title: data.title || file,
       date: formatDate(data.date),
       rawDate: data.date ? new Date(data.date).toISOString().split("T")[0] : "",
@@ -56,6 +69,7 @@ function getPosts(filter) {
       impact: data.impact || "",
       featured: data.featured || false,
       project: data.project || "",
+      image: getPostImage(slug),
     };
   });
   posts.sort((a, b) => new Date(b.rawDate) - new Date(a.rawDate));
@@ -111,8 +125,10 @@ app.get("/post/:slug", (req, res) => {
     })
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
+  const postImage = getPostImage(req.params.slug);
   res.render("post", {
     title: data.title || req.params.slug,
+    slug: req.params.slug,
     date: formatDate(data.date),
     rawDate,
     excerpt,
@@ -121,6 +137,7 @@ app.get("/post/:slug", (req, res) => {
     tags: data.tags || [],
     impact: data.impact || "",
     project: data.project || "",
+    image: postImage,
     content: marked.parse(content),
     readingTime,
     page: "post",

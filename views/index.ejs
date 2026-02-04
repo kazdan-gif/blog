@@ -19,10 +19,14 @@
     <section class="featured-section">
       <h2 class="section-title">פרויקט מומלץ</h2>
       <% featured.forEach(function(p) { %>
-        <a href="/post/<%= p.slug %>" class="featured-card">
+        <a href="/post/<%= p.slug %>" class="featured-card<%= p.image ? ' has-image' : '' %>">
+          <% if (p.image) { %>
+          <div class="featured-card-image">
+            <img src="<%= p.image %>" alt="<%= p.title %>" loading="lazy">
+          </div>
+          <% } %>
           <div class="featured-card-inner">
             <div class="card-meta">
-
               <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
             </div>
             <h3><%= p.title %></h3>
@@ -46,21 +50,27 @@
       <div class="grid">
         <% const list = (page === 'home' && featured.length > 0) ? regular : posts; %>
         <% list.forEach(function(p) { %>
-          <a href="/post/<%= p.slug %>" class="card">
-            <div class="card-meta">
-
-              <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
+          <a href="/post/<%= p.slug %>" class="card<%= p.image ? ' has-image' : '' %>">
+            <% if (p.image) { %>
+            <div class="card-image">
+              <img src="<%= p.image %>" alt="<%= p.title %>" loading="lazy">
             </div>
-            <h3><%= p.title %></h3>
-            <time datetime="<%= p.rawDate %>"><%= p.date %></time>
-            <p class="card-excerpt"><%= p.excerpt %></p>
-            <div class="card-bottom">
-              <% if (p.impact) { %><span class="impact"><%= p.impact %></span><% } %>
-              <% if (p.tools && p.tools.length) { %>
-              <div class="tools">
-                <% p.tools.forEach(function(t) { %><span class="tool-badge"><%= t %></span><% }) %>
+            <% } %>
+            <div class="card-body">
+              <div class="card-meta">
+                <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
               </div>
-              <% } %>
+              <h3><%= p.title %></h3>
+              <time datetime="<%= p.rawDate %>"><%= p.date %></time>
+              <p class="card-excerpt"><%= p.excerpt %></p>
+              <div class="card-bottom">
+                <% if (p.impact) { %><span class="impact"><%= p.impact %></span><% } %>
+                <% if (p.tools && p.tools.length) { %>
+                <div class="tools">
+                  <% p.tools.forEach(function(t) { %><span class="tool-badge"><%= t %></span><% }) %>
+                </div>
+                <% } %>
+              </div>
             </div>
           </a>
         <% }) %>

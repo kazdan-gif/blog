@@ -15,6 +15,11 @@
         </div>
         <% } %>
       </div>
+      <% if (image) { %>
+      <div class="post-featured-image">
+        <img src="<%= image %>" alt="<%= title %>" loading="eager">
+      </div>
+      <% } %>
       <div class="post-content">
         <%- content %>
       </div>
@@ -45,8 +50,15 @@
       <div class="related-grid">
         <% related.forEach(function(p) { %>
         <a href="/post/<%= p.slug %>" class="related-card">
-          <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
-          <h3><%= p.title %></h3>
+          <% if (p.image) { %>
+          <div class="related-card-image">
+            <img src="<%= p.image %>" alt="<%= p.title %>" loading="lazy">
+          </div>
+          <% } %>
+          <div class="related-card-content">
+            <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
+            <h3><%= p.title %></h3>
+          </div>
         </a>
         <% }) %>
       </div>
