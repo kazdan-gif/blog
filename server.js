@@ -165,7 +165,7 @@ app.get("/about", (req, res) => {
 app.get("/sitemap.xml", (req, res) => {
   const posts = getPosts();
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-  const pages = ["/", "/articles", "/about"];
+  const pages = ["/", "/articles", "/tools", "/tools/traffic-analyzer", "/about"];
   pages.forEach((p) => {
     xml += `  <url><loc>${SITE_URL}${p}</loc></url>\n`;
   });
@@ -557,6 +557,26 @@ function processTrafficFile(buffer, filename) {
 
   return { summary, channels, sources, mediums, combinations, email_campaigns, monthly, insights, warning };
 }
+
+// Tools index page
+app.get("/tools", (req, res) => {
+  const tools = [
+    {
+      slug: "traffic-analyzer",
+      title: "מנתח מקורות תנועה",
+      description: "נתח את יצוא הזמנות CashCow שלך והבן אילו ערוצי שיווק מניבים הכי הרבה הכנסות",
+      icon: "chart"
+    }
+  ];
+  res.render("tools/index", {
+    page: "tools",
+    title: "כלים",
+    description: "כלים חינמיים לניתוח ואופטימיזציה של העסק שלך",
+    path: "/tools",
+    siteUrl: SITE_URL,
+    tools
+  });
+});
 
 // Traffic Analyzer page
 app.get("/tools/traffic-analyzer", (req, res) => {
