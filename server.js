@@ -606,6 +606,49 @@ app.post("/api/analyze-traffic", upload.single("file"), (req, res) => {
 // End Traffic Source Analyzer
 // ============================================
 
+// ============================================
+// Agents for hire
+// ============================================
+
+const AGENTS = [
+  {
+    slug: "sharon",
+    name: "שרון",
+    avatar: "📦",
+    specialty: "ניהול משלוחים",
+    description: "עוקבת אחרי כל המשלוחים שלך עם Shipper Global. בוקר וערב. שולחת סיכום יומי, מתריעה על עיכובים ופותחת פניות לשירות לקוחות לפני שאתה שם לב.",
+    works_with: ["Shipper Global"],
+  },
+];
+
+app.get("/agents", (req, res) => {
+  res.render("agents/index", {
+    page: "agents",
+    title: "סוכנים להשכרה",
+    description: "סוכני AI שעובדים בשבילך ברקע — מעקב, דיווח וטיפול בבעיות, בלי לשכוח ובלי לעייף",
+    path: "/agents",
+    siteUrl: SITE_URL,
+    agents: AGENTS,
+  });
+});
+
+app.get("/agents/:slug", (req, res) => {
+  const agent = AGENTS.find((a) => a.slug === req.params.slug);
+  if (!agent) return res.status(404).render("404", { page: "404", description: "הדף לא נמצא", path: req.path, siteUrl: SITE_URL });
+  res.render(`agents/${agent.slug}`, {
+    page: "agents",
+    title: `${agent.name} — סוכנת AI`,
+    description: agent.description,
+    path: `/agents/${agent.slug}`,
+    siteUrl: SITE_URL,
+    agent,
+  });
+});
+
+// ============================================
+// End Agents
+// ============================================
+
 app.use((req, res) => {
   res.status(404).render("404", { page: "404", description: "הדף לא נמצא", path: req.path, siteUrl: SITE_URL });
 });
