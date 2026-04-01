@@ -1,0 +1,191 @@
+<%- include('../header') %>
+
+<div class="agents-page">
+  <div class="agents-hero">
+    <div class="agents-hero-badge">סוכנים להשכרה</div>
+    <h1>העסק שלך צריך עובד שלא מפספס כלום</h1>
+    <p class="agents-subtitle">סוכני AI שעובדים בשבילך ברקע — 24/7, בלי לשכוח, בלי לעייף. כל סוכן מתמחה בתחום אחד ועושה אותו טוב.</p>
+  </div>
+
+  <div class="agents-grid">
+    <% agents.forEach(agent => { %>
+    <a href="/agents/<%= agent.slug %>" class="agent-card">
+      <div class="agent-avatar"><%= agent.avatar %></div>
+      <div class="agent-content">
+        <div class="agent-header">
+          <h2><%= agent.name %></h2>
+          <span class="agent-specialty"><%= agent.specialty %></span>
+        </div>
+        <p><%= agent.description %></p>
+        <div class="agent-tags">
+          <% agent.works_with.forEach(tag => { %>
+          <span class="agent-tag"><%= tag %></span>
+          <% }) %>
+        </div>
+      </div>
+      <span class="agent-arrow">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+      </span>
+    </a>
+    <% }) %>
+  </div>
+</div>
+
+<style>
+.agents-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.agents-hero {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.agents-hero-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+}
+
+.agents-hero h1 {
+  font-size: 2.4rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.agents-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.agents-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.agent-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.agent-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: #667eea;
+}
+
+.agent-avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea22, #764ba222);
+  border: 2px solid #667eea44;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.agent-content {
+  flex: 1;
+}
+
+.agent-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.agent-header h2 {
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.agent-specialty {
+  font-size: 0.78rem;
+  color: #667eea;
+  background: #667eea15;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.agent-content p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0 0 0.75rem;
+  line-height: 1.6;
+}
+
+.agent-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.agent-tag {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  background: var(--bg-secondary, #f5f5f5);
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+.agent-arrow {
+  color: #667eea;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.3s ease;
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.agent-card:hover .agent-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (max-width: 600px) {
+  .agents-hero h1 {
+    font-size: 1.8rem;
+  }
+  .agent-card {
+    flex-direction: column;
+  }
+  .agent-avatar {
+    width: 56px;
+    height: 56px;
+  }
+  .agent-arrow {
+    display: none;
+  }
+}
+</style>
+
+<%- include('../footer') %>
