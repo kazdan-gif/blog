@@ -619,6 +619,14 @@ const AGENTS = [
     description: "עוקבת אחרי כל המשלוחים שלך עם Shipper Global. בוקר וערב. שולחת סיכום יומי, מתריעה על עיכובים ופותחת פניות לשירות לקוחות לפני שאתה שם לב.",
     works_with: ["Shipper Global"],
   },
+  {
+    slug: "ilan",
+    name: "אילן",
+    avatar: "🚚",
+    specialty: "ניהול משלוחים",
+    description: "מנהל את המשלוחים שלך עם EasyShip ומוודא שכל חבילה מגיעה ליעד. מעדכן את הלקוח במייל או בטלפון — גם אם יש לו טלפון כשר — ומתריע לפני שמשלוח הופך לחזרה.",
+    works_with: ["EasyShip"],
+  },
 ];
 
 app.get("/agents", (req, res) => {
