@@ -705,8 +705,8 @@ app.post("/api/sharon/signup", express.json(), async (req, res) => {
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      console.error("Airtable error:", err);
-      return res.status(502).json({ error: "Failed to save signup" });
+      console.error("Airtable error:", JSON.stringify(err));
+      return res.status(502).json({ error: "Failed to save signup", detail: err });
     }
 
     res.json({ ok: true });
