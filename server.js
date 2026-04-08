@@ -108,8 +108,18 @@ function getAllTags() {
 
 const SITE_URL = "https://doshi.kazdan.net";
 
+// Tools definition (shared)
+const TOOLS = [
+  {
+    slug: "traffic-analyzer",
+    title: "מנתח מקורות תנועה",
+    description: "נתח את יצוא הזמנות CashCow והבן אילו ערוצי שיווק מניבים הכי הרבה הכנסות",
+    icon: "📊",
+  },
+];
+
 app.get("/", (req, res) => {
-  res.render("index", { posts: getPosts(), page: "home", tags: getAllTags(), description: "AI לעסקים קטנים ובינוניים — פתרונות אוטומציה, כלים אמיתיים, תוצאות אמיתיות", path: "/", siteUrl: SITE_URL });
+  res.render("index", { posts: getPosts(), page: "home", tags: getAllTags(), description: "AI לעסקים קטנים ובינוניים — פתרונות אוטומציה, כלים אמיתיים, תוצאות אמיתיות", path: "/", siteUrl: SITE_URL, agents: AGENTS, tools: TOOLS });
 });
 
 app.get("/case-studies", (req, res) => res.redirect(301, "/articles"));

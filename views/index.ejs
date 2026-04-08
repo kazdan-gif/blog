@@ -1,35 +1,108 @@
 <%- include('header') %>
 
-    <% if (page === 'home') { %>
-    <section class="hero">
-      <h1>AI לעסקים קטנים ובינוניים</h1>
-      <p class="hero-sub">פתרונות אוטומציה לעסקים. בעיות אמיתיות, כלים אמיתיים, תוצאות אמיתיות.</p>
-    </section>
-    <% } else { %>
-    <section class="hero">
-      <h1>מאמרים</h1>
-      <p class="hero-sub">צלילות טכניות לפרויקטים של אוטומציה שנבנו עבור עסקים קטנים ובינוניים.</p>
-    </section>
-    <% } %>
+<% if (page === 'home') { %>
 
-    <% const featured = posts.filter(p => p.featured); %>
-    <% const regular = posts.filter(p => !p.featured); %>
+  <!-- Hero -->
+  <section class="home-hero">
+    <div class="home-hero-text">
+      <div class="home-hero-eyebrow">סוכני AI · כלים · אוטומציה</div>
+      <h1>AI שעובד<br><span class="home-hero-accent">בשביל העסק שלך</span></h1>
+      <p class="home-hero-sub">בעיות אמיתיות, כלים אמיתיים, תוצאות אמיתיות — בלי קסמים ובלי תקציבים גדולים.</p>
+    </div>
+  </section>
 
-    <% if (featured.length > 0 && page === 'home') { %>
-    <section class="featured-section">
-      <h2 class="section-title">פרויקט מומלץ</h2>
-      <% featured.forEach(function(p) { %>
-        <a href="/post/<%= p.slug %>" class="featured-card<%= p.image ? ' has-image' : '' %>">
+  <!-- Agents -->
+  <section class="home-section">
+    <div class="home-section-header">
+      <div>
+        <h2 class="home-section-title">סוכנים להשכרה</h2>
+        <p class="home-section-sub">סוכני AI שעובדים ברקע, כל יום, בלי לשכוח ובלי לעייף</p>
+      </div>
+      <a href="/agents" class="home-section-link">כל הסוכנים ←</a>
+    </div>
+    <div class="agents-grid">
+      <% agents.forEach(function(agent) { %>
+      <a href="/agents/<%= agent.slug %>" class="agent-card">
+        <div class="agent-card-top">
+          <div class="agent-card-avatar"><%= agent.avatar %></div>
+          <div>
+            <div class="agent-card-name"><%= agent.name %></div>
+            <div class="agent-card-specialty"><%= agent.specialty %></div>
+          </div>
+          <span class="agent-card-live"><span class="live-dot"></span>פעיל</span>
+        </div>
+        <p class="agent-card-desc"><%= agent.description %></p>
+        <div class="agent-card-footer">
+          <div class="agent-works-with">
+            <% agent.works_with.forEach(function(w) { %><span class="tool-badge"><%= w %></span><% }) %>
+          </div>
+          <span class="agent-card-cta">פרטים →</span>
+        </div>
+      </a>
+      <% }) %>
+    </div>
+  </section>
+
+  <!-- Featured Article -->
+  <% const featured = posts.filter(p => p.featured); %>
+  <% const regular = posts.filter(p => !p.featured); %>
+  <% if (featured.length > 0) { %>
+  <section class="home-section">
+    <div class="home-section-header">
+      <div>
+        <h2 class="home-section-title">פרויקט מומלץ</h2>
+      </div>
+    </div>
+    <% featured.forEach(function(p) { %>
+      <a href="/post/<%= p.slug %>" class="featured-card<%= p.image ? ' has-image' : '' %>">
+        <% if (p.image) { %>
+        <div class="featured-card-image">
+          <img src="<%= p.image %>" alt="<%= p.title %>" loading="lazy">
+        </div>
+        <% } %>
+        <div class="featured-card-inner">
+          <div class="card-meta">
+            <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
+          </div>
+          <h3><%= p.title %></h3>
+          <p class="card-excerpt"><%= p.excerpt %></p>
+          <div class="card-bottom">
+            <% if (p.impact) { %><span class="impact"><%= p.impact %></span><% } %>
+            <% if (p.tools && p.tools.length) { %>
+            <div class="tools">
+              <% p.tools.forEach(function(t) { %><span class="tool-badge"><%= t %></span><% }) %>
+            </div>
+            <% } %>
+          </div>
+        </div>
+      </a>
+    <% }) %>
+  </section>
+  <% } %>
+
+  <!-- Articles -->
+  <section class="home-section">
+    <div class="home-section-header">
+      <div>
+        <h2 class="home-section-title">מאמרים</h2>
+        <p class="home-section-sub">צלילות טכניות לפרויקטים שנבנו עבור עסקים</p>
+      </div>
+      <a href="/articles" class="home-section-link">כל המאמרים ←</a>
+    </div>
+    <div class="grid">
+      <% regular.forEach(function(p) { %>
+        <a href="/post/<%= p.slug %>" class="card<%= p.image ? ' has-image' : '' %>">
           <% if (p.image) { %>
-          <div class="featured-card-image">
+          <div class="card-image">
             <img src="<%= p.image %>" alt="<%= p.title %>" loading="lazy">
           </div>
           <% } %>
-          <div class="featured-card-inner">
+          <div class="card-body">
             <div class="card-meta">
               <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
             </div>
             <h3><%= p.title %></h3>
+            <time datetime="<%= p.rawDate %>"><%= p.date %></time>
             <p class="card-excerpt"><%= p.excerpt %></p>
             <div class="card-bottom">
               <% if (p.impact) { %><span class="impact"><%= p.impact %></span><% } %>
@@ -42,51 +115,95 @@
           </div>
         </a>
       <% }) %>
-    </section>
-    <% } %>
+    </div>
+  </section>
 
-    <section class="posts-grid">
-      <% if (page === 'home' && featured.length > 0) { %><h2 class="section-title">כל המאמרים</h2><% } %>
-      <div class="grid">
-        <% const list = (page === 'home' && featured.length > 0) ? regular : posts; %>
-        <% list.forEach(function(p) { %>
-          <a href="/post/<%= p.slug %>" class="card<%= p.image ? ' has-image' : '' %>">
-            <% if (p.image) { %>
-            <div class="card-image">
-              <img src="<%= p.image %>" alt="<%= p.title %>" loading="lazy">
-            </div>
-            <% } %>
-            <div class="card-body">
-              <div class="card-meta">
-                <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
-              </div>
-              <h3><%= p.title %></h3>
-              <time datetime="<%= p.rawDate %>"><%= p.date %></time>
-              <p class="card-excerpt"><%= p.excerpt %></p>
-              <div class="card-bottom">
-                <% if (p.impact) { %><span class="impact"><%= p.impact %></span><% } %>
-                <% if (p.tools && p.tools.length) { %>
-                <div class="tools">
-                  <% p.tools.forEach(function(t) { %><span class="tool-badge"><%= t %></span><% }) %>
-                </div>
-                <% } %>
-              </div>
-            </div>
-          </a>
-        <% }) %>
+  <!-- Tools -->
+  <section class="home-section">
+    <div class="home-section-header">
+      <div>
+        <h2 class="home-section-title">כלים חינמיים</h2>
+        <p class="home-section-sub">כלים לניתוח ואופטימיזציה — פתוחים לכולם</p>
       </div>
-    </section>
+      <a href="/tools" class="home-section-link">כל הכלים ←</a>
+    </div>
+    <div class="tools-grid">
+      <% tools.forEach(function(tool) { %>
+      <a href="/tools/<%= tool.slug %>" class="tool-card">
+        <div class="tool-card-icon"><%= tool.icon %></div>
+        <div class="tool-card-body">
+          <div class="tool-card-title"><%= tool.title %></div>
+          <p class="tool-card-desc"><%= tool.description %></p>
+        </div>
+        <span class="tool-card-cta">נסה →</span>
+      </a>
+      <% }) %>
+    </div>
+  </section>
 
-    <section class="tags-section">
-      <h2 class="section-title">נושאים</h2>
-      <div class="tags-search">
-        <input type="text" id="tag-search" placeholder="חיפוש נושא..." autocomplete="off">
-      </div>
-      <div class="tags-list" id="tags-list">
-        <% tags.forEach(function(tag) { %>
-          <button class="tag-btn" data-tag="<%= tag %>"><%= tag %></button>
-        <% }) %>
-      </div>
-    </section>
+  <!-- Tags -->
+  <section class="tags-section">
+    <h2 class="section-title">נושאים</h2>
+    <div class="tags-search">
+      <input type="text" id="tag-search" placeholder="חיפוש נושא..." autocomplete="off">
+    </div>
+    <div class="tags-list" id="tags-list">
+      <% tags.forEach(function(tag) { %>
+        <button class="tag-btn" data-tag="<%= tag %>"><%= tag %></button>
+      <% }) %>
+    </div>
+  </section>
+
+<% } else { %>
+
+  <!-- Articles page -->
+  <section class="hero">
+    <h1>מאמרים</h1>
+    <p class="hero-sub">צלילות טכניות לפרויקטים של אוטומציה שנבנו עבור עסקים קטנים ובינוניים.</p>
+  </section>
+
+  <section class="posts-grid">
+    <div class="grid">
+      <% posts.forEach(function(p) { %>
+        <a href="/post/<%= p.slug %>" class="card<%= p.image ? ' has-image' : '' %>">
+          <% if (p.image) { %>
+          <div class="card-image">
+            <img src="<%= p.image %>" alt="<%= p.title %>" loading="lazy">
+          </div>
+          <% } %>
+          <div class="card-body">
+            <div class="card-meta">
+              <% if (p.category) { %><span class="badge badge-category"><%= p.category %></span><% } %>
+            </div>
+            <h3><%= p.title %></h3>
+            <time datetime="<%= p.rawDate %>"><%= p.date %></time>
+            <p class="card-excerpt"><%= p.excerpt %></p>
+            <div class="card-bottom">
+              <% if (p.impact) { %><span class="impact"><%= p.impact %></span><% } %>
+              <% if (p.tools && p.tools.length) { %>
+              <div class="tools">
+                <% p.tools.forEach(function(t) { %><span class="tool-badge"><%= t %></span><% }) %>
+              </div>
+              <% } %>
+            </div>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  </section>
+
+  <section class="tags-section">
+    <h2 class="section-title">נושאים</h2>
+    <div class="tags-search">
+      <input type="text" id="tag-search" placeholder="חיפוש נושא..." autocomplete="off">
+    </div>
+    <div class="tags-list" id="tags-list">
+      <% tags.forEach(function(tag) { %>
+        <button class="tag-btn" data-tag="<%= tag %>"><%= tag %></button>
+      <% }) %>
+    </div>
+  </section>
+
+<% } %>
 
 <%- include('footer') %>
