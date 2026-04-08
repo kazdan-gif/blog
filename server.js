@@ -8,6 +8,13 @@ const hljs = require("highlight.js");
 const multer = require("multer");
 const XLSX = require("xlsx");
 
+// Load .env file (Node 20.12+ built-in, no dotenv package needed)
+try { process.loadEnvFile(); } catch {}
+
+// Airtable config — set AIRTABLE_API_KEY in .env or deployment env vars
+const AIRTABLE_BASE_ID = "appDi8VamcE201Ky6";
+const AIRTABLE_TABLE_ID = "tblI1vpgMWKAryiFL";
+
 const marked = new Marked(
   markedHighlight({
     langPrefix: "hljs language-",
@@ -655,6 +662,61 @@ app.get("/agents/:slug", (req, res) => {
 
 // ============================================
 // End Agents
+// ============================================
+
+// ============================================
+// Sharon signup → Airtable
+// Field names in Airtable: Name, Phone, Business, Volume, Source
+// ============================================
+
+app.post("/api/sharon/signup", express.json(), async (req, res) => {
+  const apiKey = process.env.AIRTABLE_API_KEY;
+  if (!apiKey) {
+    console.error("AIRTABLE_API_KEY not set");
+    return res.status(500).json({ error: "Server config error" });
+  }
+
+  const { name, phone, business, volume } = req.body || {};
+  if (!name || !phone) {
+    return res.status(400).json({ error: "שם וטלפון הם שדות חובה" });
+  }
+
+  const fields = {
+    Name: name,
+    Phone: phone,
+    ...(business && { Business: business }),
+    ...(volume && { Volume: volume }),
+    Source: "Sharon landing page",
+  };
+
+  try {
+    const response = await fetch(
+      `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ fields }),
+      }
+    );
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      console.error("Airtable error:", err);
+      return res.status(502).json({ error: "Failed to save signup" });
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Sharon signup error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ============================================
+// End Sharon signup
 // ============================================
 
 app.use((req, res) => {
