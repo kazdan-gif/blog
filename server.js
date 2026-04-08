@@ -732,6 +732,72 @@ app.post("/api/sharon/signup", express.json(), async (req, res) => {
 // End Sharon signup
 // ============================================
 
+// ============================================
+// Ilan signup → Airtable (same table, Source = "Ilan landing page")
+// ============================================
+
+app.post("/api/ilan/signup", express.json(), async (req, res) => {
+  const apiKey = process.env.AIRTABLE_API_KEY;
+  if (!apiKey) {
+    console.error("AIRTABLE_API_KEY not set");
+    return res.status(500).json({ error: "Server config error" });
+  }
+
+  const { name, phone, email, business, website } = req.body || {};
+  if (!name || !phone) {
+    return res.status(400).json({ error: "שם וטלפון הם שדות חובה" });
+  }
+
+  const fields = {
+    Name: name,
+    Phone: phone,
+    ...(email && { Email: email }),
+    ...(business && { Business: business }),
+    ...(website && { Website: website }),
+    Source: "Ilan landing page",
+  };
+
+  try {
+    const body = JSON.stringify({ fields });
+    const result = await new Promise((resolve, reject) => {
+      const req = https.request(
+        {
+          hostname: "api.airtable.com",
+          path: `/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}`,
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(body),
+          },
+        },
+        (r) => {
+          let data = "";
+          r.on("data", (chunk) => (data += chunk));
+          r.on("end", () => resolve({ status: r.statusCode, body: data }));
+        }
+      );
+      req.on("error", reject);
+      req.write(body);
+      req.end();
+    });
+
+    if (result.status < 200 || result.status >= 300) {
+      console.error("Airtable error:", result.status, result.body);
+      return res.status(502).json({ error: "Failed to save signup", detail: result.body });
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Ilan signup error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ============================================
+// End Ilan signup
+// ============================================
+
 app.use((req, res) => {
   res.status(404).render("404", { page: "404", description: "הדף לא נמצא", path: req.path, siteUrl: SITE_URL });
 });
