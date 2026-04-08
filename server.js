@@ -676,7 +676,7 @@ app.post("/api/sharon/signup", express.json(), async (req, res) => {
     return res.status(500).json({ error: "Server config error" });
   }
 
-  const { name, phone, business, volume } = req.body || {};
+  const { name, phone, email, business, website } = req.body || {};
   if (!name || !phone) {
     return res.status(400).json({ error: "שם וטלפון הם שדות חובה" });
   }
@@ -684,8 +684,9 @@ app.post("/api/sharon/signup", express.json(), async (req, res) => {
   const fields = {
     Name: name,
     Phone: phone,
+    ...(email && { Email: email }),
     ...(business && { Business: business }),
-    ...(volume && { Volume: volume }),
+    ...(website && { Website: website }),
     Source: "Sharon landing page",
   };
 

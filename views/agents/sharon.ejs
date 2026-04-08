@@ -160,29 +160,27 @@
     <form class="sharon-signup-form" id="sharonSignupForm">
       <div class="form-row">
         <div class="form-group">
-          <label for="signup-name">שם</label>
+          <label for="signup-name">שם *</label>
           <input type="text" id="signup-name" name="name" placeholder="שם פרטי ומשפחה" required>
         </div>
         <div class="form-group">
-          <label for="signup-phone">טלפון</label>
+          <label for="signup-phone">טלפון *</label>
           <input type="tel" id="signup-phone" name="phone" placeholder="050-0000000" required>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
+          <label for="signup-email">מייל</label>
+          <input type="email" id="signup-email" name="email" placeholder="you@example.com">
+        </div>
+        <div class="form-group">
           <label for="signup-business">שם העסק</label>
           <input type="text" id="signup-business" name="business" placeholder="שם העסק שלך">
         </div>
-        <div class="form-group">
-          <label for="signup-volume">כמה משלוחים בחודש?</label>
-          <select id="signup-volume" name="volume">
-            <option value="">בחר בערך...</option>
-            <option value="1-20">עד 20</option>
-            <option value="21-100">20–100</option>
-            <option value="101-500">100–500</option>
-            <option value="500+">מעל 500</option>
-          </select>
-        </div>
+      </div>
+      <div class="form-group">
+        <label for="signup-website">אתר / חנות אונליין</label>
+        <input type="url" id="signup-website" name="website" placeholder="https://...">
       </div>
       <button type="submit" class="sharon-cta-btn large full-width">שלח — ניצור קשר בהקדם</button>
     </form>
@@ -208,8 +206,9 @@ document.getElementById('sharonSignupForm').addEventListener('submit', async fun
   const data = {
     name: form.name.value,
     phone: form.phone.value,
+    email: form.email.value,
     business: form.business.value,
-    volume: form.volume.value,
+    website: form.website.value,
   };
 
   try {
