@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const https = require("https");
 const matter = require("gray-matter");
 const { Marked } = require("marked");
 const { markedHighlight } = require("marked-highlight");
@@ -691,22 +692,33 @@ app.post("/api/sharon/signup", express.json(), async (req, res) => {
   };
 
   try {
-    const response = await fetch(
-      `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
+    const body = JSON.stringify({ fields });
+    const result = await new Promise((resolve, reject) => {
+      const req = https.request(
+        {
+          hostname: "api.airtable.com",
+          path: `/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}`,
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(body),
+          },
         },
-        body: JSON.stringify({ fields }),
-      }
-    );
+        (r) => {
+          let data = "";
+          r.on("data", (chunk) => (data += chunk));
+          r.on("end", () => resolve({ status: r.statusCode, body: data }));
+        }
+      );
+      req.on("error", reject);
+      req.write(body);
+      req.end();
+    });
 
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      console.error("Airtable error:", JSON.stringify(err));
-      return res.status(502).json({ error: "Failed to save signup", detail: err });
+    if (result.status < 200 || result.status >= 300) {
+      console.error("Airtable error:", result.status, result.body);
+      return res.status(502).json({ error: "Failed to save signup", detail: result.body });
     }
 
     res.json({ ok: true });
